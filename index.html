@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>catatan kecil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+
+  body{
+    margin:0;
+    background:#ffffff;
+    min-height:100svh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Caveat', cursive;
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .scene{
+    perspective: 1800px;
+    animation: fadeIn .9s ease both;
+  }
+  @keyframes fadeIn{ from{ opacity:0 } to{ opacity:1 } }
+
+  .book{
+    --w: clamp(160px, 40vw, 285px);
+    --h: calc(var(--w) * 1.42);
+    --lh: calc(var(--w) * 0.105);
+
+    position:relative;
+    width: calc(var(--w) * 2);
+    height: var(--h);
+    transform: translateX(-25%);
+    transform-style: preserve-3d;
+    transition: transform .85s cubic-bezier(.6,.05,.28,1);
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .book.open{ transform: translateX(0); }
+
+  .paper-bg{
+    background-color:#ffffff;
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--lh) - 1px),
+        #d9e7f6 calc(var(--lh) - 1px),
+        #d9e7f6 var(--lh)
+      ),
+      linear-gradient(
+        to right,
+        transparent 0 12%,
+        #f6cccc 12%,
+        #f6cccc calc(12% + 1.5px),
+        transparent calc(12% + 1.5px)
+      );
+    background-position: 0 calc(var(--lh) * 0.55), 0 0;
+    background-repeat: repeat, no-repeat;
+  }
+
+  .page{
+    position:absolute;
+    top:0; left:var(--w);
+    width:var(--w);
+    height:var(--h);
+    border-radius:2px;
+    overflow:hidden;
+    box-shadow:
+      0 14px 34px rgba(23,37,66,.13),
+      0 2px 6px rgba(23,37,66,.07);
+  }
+
+  /* bayangan lipatan di sisi kiri halaman dalam */
+  .inside::after{
+    content:'';
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:22px;
+    background:linear-gradient(to right, rgba(23,37,66,.11), rgba(23,37,66,0));
+    pointer-events:none;
+  }
+
+  .cover{
+    position:absolute;
+    top:0; left:var(--w);
+    width:var(--w);
+    height:var(--h);
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform .85s cubic-bezier(.6,.05,.28,1);
+  }
+  .book.open .cover{ transform: rotateY(-180deg); }
+
+  .face{
+    position:absolute;
+    inset:0;
+    border-radius:2px;
+    overflow:hidden;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    box-shadow:
+      0 14px 34px rgba(23,37,66,.13),
+      0 2px 6px rgba(23,37,66,.07);
+  }
+  .face.back{ transform: rotateY(180deg); }
+
+  .face.back::after{
+    content:'';
+    position:absolute;
+    right:0; top:0; bottom:0;
+    width:22px;
+    background:linear-gradient(to left, rgba(23,37,66,.11), rgba(23,37,66,0));
+    pointer-events:none;
+  }
+
+  .note{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 10%;
+    text-align:center;
+    font-size: calc(var(--w) * 0.12);
+    font-weight:600;
+    line-height:1.12;
+    letter-spacing:.3px;
+    color:#33507a;
+  }
+  .note span{
+    display:inline-block;
+    transform: rotate(-3deg);
+  }
+  .note .heart{
+    color:#e88a9a;
+    font-weight:400;
+  }
+
+  .corner{
+    position:absolute;
+    right: calc(var(--w) * 0.09);
+    bottom: calc(var(--w) * 0.055);
+    font-size: calc(var(--w) * 0.075);
+    font-weight:400;
+    letter-spacing:.4px;
+    color:#9aa6b8;
+    pointer-events:none;
+  }
+
+  .hint{
+    position:fixed;
+    left:50%;
+    bottom:7vh;
+    transform:translateX(-50%);
+    margin:0;
+    font-size: clamp(15px, 4.2vw, 21px);
+    color:#c2cad6;
+    letter-spacing:.5px;
+    transition: opacity .45s ease;
+    pointer-events:none;
+  }
+  body.opened .hint{ opacity:0; }
+</style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="book" id="book">
+
+      <div class="page inside paper-bg">
+        <div class="note">
+          <span>its okay<br>to be gay <span class="heart">😊</span></span>
+        </div>
+        <div class="corner">notxbi_</div>
+      </div>
+
+      <div class="cover">
+        <div class="face front paper-bg">
+          <div class="corner">notxbi_</div>
+        </div>
+        <div class="face back paper-bg"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="hint">klik kertasnya</p>
+
+<script>
+  const book = document.getElementById('book');
+
+  book.addEventListener('click', () => {
+    book.classList.toggle('open');
+    document.body.classList.toggle('opened');
+  });
+</script>
+</body>
+</html>
